@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"github.com/zugzwang/batchgcd"
+	"os"
 )
 
 func main() {
@@ -39,8 +39,8 @@ func collectModuli() {
 	// Collect moduli
 	defer func() {
 		output2048.Close()
-	    output3072.Close()
-	    output4096.Close()
+		output3072.Close()
+		output4096.Close()
 	}()
 	err = batchgcd.ModuliFromDir("./data/keys/", output2048, output3072, output4096)
 	if err != nil {
@@ -48,5 +48,3 @@ func collectModuli() {
 	}
 	fmt.Println("Done.")
 }
-
-
