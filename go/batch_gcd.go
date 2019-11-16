@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	moduliFile, err := os.Open("data/moduli/moduli2048.txt")
+	moduliFile, err := os.Open("data/moduli/10-moduli.txt")
 	if err != nil {
 		panic(err)
 	}
