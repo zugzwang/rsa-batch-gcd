@@ -7,7 +7,12 @@ import (
 )
 
 func main() {
-	moduliFile, err := os.Open("data/moduli/10-moduli.txt")
+	fmt.Println(os.Args)
+	if len(os.Args) < 2 {
+		fmt.Println("Give a target moduli file (ex: data/moduli/mod.txt)")
+		return
+	}
+	moduliFile, err := os.Open(os.Args[1])
 	if err != nil {
 		panic(err)
 	}

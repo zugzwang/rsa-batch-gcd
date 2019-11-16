@@ -16,7 +16,7 @@ func main() {
 	// Create directory if it doesn't exist
 	dir := "data/moduli/"
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		if err = os.Mkdir(dir, 0755); err != nil {
+		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 			panic(err)
 		}
 	}
@@ -42,21 +42,37 @@ func main() {
 
 	defer modFile.Close()
 	// Generate keys and write to file
-	for i := 0; i < n; i++ {
+	for i := 0; i < 2*n; i+=2 {
 		key, errKG := openpgp.NewEntity(name, comment, email, config)
 		if errKG != nil {
 			panic(errKG)
 		}
 		mod := key.PrimaryKey.PublicKey.(*rsa.PublicKey).N.Bytes()
 		mod64 := base64.StdEncoding.EncodeToString(mod)
-		fmt.Println(mod64)
+		bitLen, err := key.PrimaryKey.BitLength()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(i, bitLen, mod64[:30] + "...")
+		modFile.WriteString(strconv.Itoa(i))
+		modFile.WriteString(",")
+		modFile.WriteString(strconv.Itoa(int(bitLen)))
+		modFile.WriteString(",")
 		modFile.WriteString(mod64)
 		modFile.WriteString("\n")
 		for _, subkey := range key.Subkeys {
 			subMod := subkey.PublicKey.PublicKey.(*rsa.PublicKey).N.Bytes()
 			subMod64 := base64.StdEncoding.EncodeToString(subMod)
+			subBitLen, err := key.PrimaryKey.BitLength()
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(i+1, subBitLen, subMod64[:30] + "...")
+			modFile.WriteString(strconv.Itoa(i+1))
+			modFile.WriteString(",")
+			modFile.WriteString(strconv.Itoa(int(subBitLen)))
+			modFile.WriteString(",")
 			modFile.WriteString(subMod64)
-			fmt.Println(subMod64)
 			modFile.WriteString("\n")
 		}
 	}
