@@ -17,10 +17,10 @@ func main() {
 		panic(err)
 	}
 	defer moduliFile.Close()
-	gcds, compromised, err := batchgcd.BatchGcdFromFile(moduliFile)
+	gcds, compromised, err := batchgcd.BatchGcdFromFile(moduliFile, true)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("%d keys analyzed. Compromised keys:\n", len(gcds))
-	fmt.Println(compromised)
+	fmt.Println(len(compromised))
 }
