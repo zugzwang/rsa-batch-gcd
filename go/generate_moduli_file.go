@@ -4,10 +4,9 @@ package main
 
 import (
 	"encoding/base64"
+	"math/big"
 	"fmt"
-	"golang.org/x/crypto/openpgp"
-	"golang.org/x/crypto/openpgp/packet"
-	"golang.org/x/crypto/rsa"
+	"crypto/rand"
 	"os"
 	"strconv"
 )
@@ -32,48 +31,28 @@ func main() {
 		panic(err)
 	}
 
-	config := &packet.Config{
-		RSABits:   2048,
-		Algorithm: packet.PubKeyAlgoRSA,
-	}
-	name := "tester"
-	comment := "batch-gcd"
-	email := "zug@zwang.com"
-
 	defer modFile.Close()
 	// Generate keys and write to file
-	for i := 0; i < 2*n; i+=2 {
-		key, errKG := openpgp.NewEntity(name, comment, email, config)
-		if errKG != nil {
-			panic(errKG)
-		}
-		mod := key.PrimaryKey.PublicKey.(*rsa.PublicKey).N.Bytes()
-		mod64 := base64.StdEncoding.EncodeToString(mod)
-		bitLen, err := key.PrimaryKey.BitLength()
+	for i := 0; i < n; i++ {
+		p, err := rand.Prime(rand.Reader, 1024)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(i, bitLen, mod64[:30] + "...")
+		q, err := rand.Prime(rand.Reader, 1024)
+		if err != nil {
+			panic(err)
+		}
+		mod := new(big.Int)
+		mod.Mul(p, q)
+		mod64 := base64.StdEncoding.EncodeToString(mod.Bytes())
+		bitLen := 2048
+		fmt.Println(i, bitLen, mod64[:60] + "...")
 		modFile.WriteString(strconv.Itoa(i))
 		modFile.WriteString(",")
 		modFile.WriteString(strconv.Itoa(int(bitLen)))
 		modFile.WriteString(",")
 		modFile.WriteString(mod64)
 		modFile.WriteString("\n")
-		for _, subkey := range key.Subkeys {
-			subMod := subkey.PublicKey.PublicKey.(*rsa.PublicKey).N.Bytes()
-			subMod64 := base64.StdEncoding.EncodeToString(subMod)
-			subBitLen, err := key.PrimaryKey.BitLength()
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(i+1, subBitLen, subMod64[:30] + "...")
-			modFile.WriteString(strconv.Itoa(i+1))
-			modFile.WriteString(",")
-			modFile.WriteString(strconv.Itoa(int(subBitLen)))
-			modFile.WriteString(",")
-			modFile.WriteString(subMod64)
-			modFile.WriteString("\n")
-		}
 	}
+	fmt.Println("NOTE: Written to " + fileName)
 }

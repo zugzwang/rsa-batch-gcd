@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/zugzwang/batchgcd"
+	"time"
 	"os"
 )
 
@@ -17,10 +18,13 @@ func main() {
 		panic(err)
 	}
 	defer moduliFile.Close()
+	start := time.Now()
 	gcds, compromised, err := batchgcd.BatchGcdFromFile(moduliFile, true)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("%d keys analyzed. Compromised keys:\n", len(gcds))
 	fmt.Println(len(compromised))
+	elapsed := time.Since(start)
+	fmt.Println(elapsed)
 }
