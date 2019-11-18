@@ -13,10 +13,12 @@ func main() {
 		fmt.Println("Give a target moduli file (ex: data/moduli/mod.txt)")
 		return
 	}
+	fmt.Println("Hello. Reading moduli from " + os.Args[1])
 	moduliFile, err := os.Open(os.Args[1])
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Ready.")
 	defer moduliFile.Close()
 	start := time.Now()
 	gcds, compromised, err := batchgcd.BatchGcdFromFile(moduliFile, true)
