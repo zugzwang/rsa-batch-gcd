@@ -19,13 +19,18 @@ func main() {
 			panic(err)
 		}
 	}
-	var n int
+	var n, bitLen int
 	fmt.Println("Number of keys?")
 	_, err := fmt.Scanf("%d", &n)
 	if err != nil {
 		panic(err)
 	}
-	fileName := dir + strconv.Itoa(n) + "-moduli.txt"
+	fmt.Println("Bit length of modulus? (Ex. 4096)")
+	_, err = fmt.Scanf("%d", &bitLen)
+	if err != nil {
+		panic(err)
+	}
+	fileName := dir + strconv.Itoa(n) + "moduli" + strconv.Itoa(bitLen) + ".txt"
 	modFile, err := os.Create(fileName)
 	if err != nil {
 		panic(err)
@@ -34,11 +39,11 @@ func main() {
 	defer modFile.Close()
 	// Generate keys and write to file
 	for i := 0; i < n; i++ {
-		p, err := rand.Prime(rand.Reader, 1024)
+		p, err := rand.Prime(rand.Reader, bitLen/2)
 		if err != nil {
 			panic(err)
 		}
-		q, err := rand.Prime(rand.Reader, 1024)
+		q, err := rand.Prime(rand.Reader, bitLen/2)
 		if err != nil {
 			panic(err)
 		}

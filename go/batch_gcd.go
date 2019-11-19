@@ -21,12 +21,12 @@ func main() {
 	fmt.Println("Ready.")
 	defer moduliFile.Close()
 	start := time.Now()
-	gcds, compromised, err := batchgcd.BatchGcdFromFile(moduliFile, true)
+	gcds, compromised, err := batchgcd.GCDFromModuliFile(moduliFile)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("%d keys analyzed. Compromised keys:\n", len(gcds))
-	fmt.Println(len(compromised))
+	fmt.Println(compromised)
 	elapsed := time.Since(start)
 	fmt.Println(elapsed)
 }
